@@ -1,4 +1,4 @@
-#include "Hash_Table.h"
+#include "Hash_Table_pointer.h"
 
 #ifdef DEBUG
     #define VERIFY_TABLE(table) HashTable_Verify (table)
@@ -8,28 +8,31 @@
 
 #endif
 
+
+    
+
 int main ()
 {
     srand (time (0)); 
     HashTable table = {};
-    HashTable_Init (&table  , 1000000); 
+    HashTable_Init (&table , 1000000); 
 
    
     size_t search_word_count = 600000;  
-    char** words_to_find = (char**)calloc (search_word_count  , sizeof (char*));
-    GenerateRandomWordsForSearch (words_to_find  , search_word_count  , 5);
+    char** words_to_find =  (char**)calloc (search_word_count , sizeof (char*));
+    GenerateRandomWordsForSearch (words_to_find , search_word_count , 5);
 
     uint64_t start = rdtsc ();  
-    HashTable_InsertFromFile (&table  , "words.txt");
-    // HashTable_BucketStats (&table  , "buckets_stat.txt");
+    HashTable_InsertFromFile (&table , "words.txt");
+    // HashTable_BucketStats(&table , "buckets_stat.txt");
 
     
-    HashTable_FindWords (&table  , words_to_find  , search_word_count);
+    HashTable_FindWords (&table , words_to_find , search_word_count);
     uint64_t end = rdtsc ();
-    printf ("\nTicks1: %lu\n\n"  , end - start);
+    printf ("\nTicks1: %lu\n\n" , end - start);
 
     
-    for (size_t i = 0; i < search_word_count; ++i) {
+    for  (size_t i = 0; i < search_word_count; ++i) {
         free (words_to_find[i]);
     }
     free (words_to_find);
@@ -37,9 +40,6 @@ int main ()
     HashTable_Destroy (&table);
     return 0;
 }
-
-
-
 
 void HashTable_Insert (HashTable* table  , const char* key)
 {
@@ -90,8 +90,6 @@ bool HashTable_Find (const HashTable* table  , const char* key)
 }
 
 
-
-
 uint64_t Hash_djb2 (const char* str)
 {
     my_assert (str == NULL);
@@ -105,6 +103,8 @@ uint64_t Hash_djb2 (const char* str)
 
     return hash;
 }
+
+
 void HashTable_Init (HashTable* table  , size_t element_count)
 {
     my_assert (table == NULL);
@@ -135,11 +135,12 @@ void HashTable_Destroy (HashTable* table)
     table->count = 0;
 }
 
+
 void HashTable_Dump (const HashTable* table)
 {
     my_assert (table == NULL);
 
-    if (!table || !table->buckets) return;
+    
 
     for (size_t i = 0; i < table->size; ++i) {
         ListNode* node = table->buckets[i];
@@ -153,6 +154,7 @@ void HashTable_Dump (const HashTable* table)
         printf ("NULL\n");
     }
 }
+
 
 void HashTable_InsertFromFile (HashTable* table  , const char* filename)
 {
@@ -178,20 +180,21 @@ void HashTable_InsertFromFile (HashTable* table  , const char* filename)
 }   
 
 
+
 char* GenerateRandomWord (size_t length)
 {
     static const char alphanum[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     size_t alphanum_size = sizeof (alphanum) - 1;
 
-    char* word = (char*)calloc (length + 1  , 1);
-    for (size_t i = 0; i < length; ++i) {
+    char* word =  (char*)calloc (length + 1 , 1);
+    for  (size_t i = 0; i < length; ++i) {
 
-        int rand_index =    fast_rand () % alphanum_size;
+        int rand_index = fast_rand () % alphanum_size;
         word[i] = alphanum[rand_index];
     }
     word[length] = '\0';
 
-    return word;    
+    return word;
 }
 
 

@@ -8,9 +8,11 @@
 
 #endif
 
+
+
+
 int main ()
-{
-    srand (time (0)); 
+{ 
     HashTable table = {};
     HashTable_Init (&table , 700000); 
 
@@ -21,7 +23,7 @@ int main ()
 
     uint64_t start = rdtsc ();  
     HashTable_InsertFromFile (&table , "words.txt");
-    // HashTable_BucketStats (&table , "buckets_stat.txt"); 
+    HashTable_BucketStats (&table , "buckets_stat3.txt"); 
 
     
     HashTable_FindWords (&table , words_to_find , search_word_count);
@@ -51,20 +53,20 @@ void HashTable_Insert (HashTable* table , const char* key)
 
     ListNode* node = table->buckets[index];
 
-    char temp[32] = {};
+    char temp[32] = "";
     memcpy (temp , key , 32);
 
-    // printf ("\ntemp = ");
+    // printf ("\nkey = ");
     // for (int i = 0 ; i < 32 ; i++) {
 
-    //     if (temp[i] == '\0')
+    //     if (key[i] == '\0')
     //         printf ("\\0");
 
     //     else
-    //         printf ("%c" , temp[i]);
+    //         printf ("%c" , key[i]);
     
 
-    // }
+    // }    
 
     while (node) {
 
@@ -75,13 +77,26 @@ void HashTable_Insert (HashTable* table , const char* key)
     }
 
    
-    ListNode* new_node = (ListNode*)calloc (sizeof (ListNode) , 1);
-    my_assert (new_node == NULL);
-    new_node->key = temp;
+    ListNode* new_node = (ListNode*)calloc(1, sizeof(ListNode));
+    my_assert(new_node == NULL);
+
+    memcpy(new_node->key, temp, 32);
+    //  printf ("\nnew_node->key = ");
+    // for (int i = 0 ; i < 32 ; i++) {
+
+    //     if (new_node->key[i] == '\0')
+    //         printf ("\\0");
+
+    //     else
+    //         printf ("%c" , new_node->key[i]);
+    
+
+    // } 
     new_node->next = table->buckets[index];
     table->buckets[index] = new_node;
-
+    
     table->count++;
+
 
     VERIFY_TABLE(table);
 }
@@ -128,6 +143,7 @@ void HashTable_Init (HashTable* table , size_t element_count)
     my_assert (table == NULL);
 
     table->size = element_count / LOAD_FACTOR + 1;
+    printf ("SIZE = %d\n" , table->size);                                                       
     table->buckets = (ListNode**) calloc (table->size , sizeof (ListNode*));
     my_assert (table->buckets == NULL);
     table->count = 0;
@@ -185,16 +201,19 @@ void HashTable_InsertFromFile (HashTable* table , const char* filename)
         return;
     }
 
-    char word[40] = "";  
-
+    char word[32] = "";  
     while (fgets (word , sizeof (word) , file)) {
         word[strcspn (word , "\n")] = '\0';
+
+         for (int i = strlen(word); i < sizeof(word); i++) {
+            word[i] = '\0';  // Обнуляем оставшиеся символы
+        }
 
         if (word[0] != '\0') {
             HashTable_Insert (table , word);  
         }
     }
-
+    printf ("Table_count = %d\n" , table->count);
     fclose (file);
 }   
 
