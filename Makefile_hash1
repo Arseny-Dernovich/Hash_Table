@@ -1,0 +1,31 @@
+# Компиляторы
+CXX = g++
+ASM = nasm
+
+# Флаги
+CXXFLAGS = --std=c++17 -mavx2 -O3	 -g  -ggdb3 -fno-omit-frame-pointer -fno-inline \
+-Wall -Wextra -Wno-unused-parameter
+ASMFLAGS = -f elf64
+
+# Файлы
+TARGET = hash1
+OBJS = Hash_Table_first_opt.o hash.o
+
+# Цель по умолчанию
+all: $(TARGET)
+
+# Компиляция C++ файла
+Hash_Table_first_opt.o: Hash_Table_first_opt.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Компиляция NASM файла
+hash.o: hash.asm
+	$(ASM) $(ASMFLAGS) $< -o $@
+
+# Линковка
+$(TARGET): $(OBJS)
+	$(CXX) -o $@ $(OBJS)
+
+# Очистка
+clean:
+	rm -f *.o $(TARGET)
